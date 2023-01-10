@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>expense-tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+  
+    
+</head>
+<body style="border: 2px solid black; margin:50px">
+    <h1 class="fs-1 fst-italic" style="text-align:center;">expense-tracker</h1>
+    <hr>
+     <br>
+     
+   
+   <div class="container-lg">
+    
+    <form >
+        <div class=" row">
+
+            <div class="col-lg-3">
+                <label for="text" class="form-label fs-3">Expense</label>
+                <input type="number" id="expense" class="form-control" >
+         </div>
+         <br>
+        <div class="col-lg-2">
+            
+            <label for="text" class="fs-3">Choose description</label>
+            <select id="description" type="text" class="form-select form-select-sm fs-3" aria-label=".form-select-sm example" >
+                <option selected>description</option>
+                <option value="1">food</option>
+                <option value="2">drink</option>
+                <option value="3">pizza</option>
+              </select>
+         </div>
+         <br>
+        <div class="col-lg-2">
+            <label for="text" class="fs-3">Choose category</label>
+            <select id="category" type ="text" class="form-select-sm fs-3" aria-label=".form-select-sm example ">
+                <option selected>category</option>
+                <option value="Movies">Movies</option>
+                <option value="WebSeries">WebSeries</option>
+                <option value="Anime">Anime</option>
+              </select>
+         </div>
+         
+         <div class="col-lg-4 btn">
+              <button id="btn" type="button" class=" col-lg-3 btn btn-secondary btn-lg">Add Expense </button>
+        </div>
+        
+         
+        <div>
+            <br>
+        </div>
+
+        </div>
+    </form>
+    <ul  id="listOfUsers"></ul>
+
+
+
+   </div>
+
+   
+
+
+   <script>
+
+
+    const btn = document.getElementById("btn");
+
+    btn.addEventListener("click", (e)=>{
+       const expense = document.getElementById("expense").value;
+
+       const des = document.getElementById("description");
+       const des_text = des.options[des.selectedIndex].text;
+ 
+       const cat = document.getElementById("category");
+       const cat_text = cat.options[cat.selectedIndex].text;
+    //    console.log(cat_text);
+
+
+     obj = {
+        expense,
+        des_text,
+        cat_text
+     }
+
+     if(expense === '') return;
+     
+
+     const availabelData = `${expense} ${des_text} ${cat_text}`;
+    //  console.log(availabelData);
+     if(localStorage.getItem(availabelData) !==null){
+        // localStorage.removeItem(availabelData);
+        return;
+     }
+
+    
+    const stringfyObject = JSON.stringify(obj);
+    const key = `${expense} ${des_text} ${cat_text}`;
+    localStorage.setItem(key, stringfyObject);
+
+     showNewExpneseOnUI(obj,key);
+       
+    })
+
+    function showNewExpneseOnUI(obj){
+        const key = `${obj.expense} ${obj.des_text} ${obj.cat_text}`;
+        // console.log(key);
+        const parent = document.getElementById("listOfUsers");
+        const childnode = `<li class="fs-4" id='${key}' style="text-decoration:none;"> ${obj.expense} ${obj.des_text} ${obj.cat_text} 
+            <button onclick="editExpense('${key}')">Edit Expense</button>
+            <button onclick="deleteExpense('${key}')">Delete Expense</button>
+            </li>` 
+        
+            // console.log(parent.innerHTML);
+        parent.innerHTML = parent.innerHTML + childnode;
+        // console.log(parent.innerHTML);
+        
+        // console.log(childnode);
+    }
+   
+
+    window.addEventListener("DOMContentLoaded", ()=>{
+        const keys = Object.keys(localStorage);
+
+        keys.forEach(elem => {
+            let key = JSON.parse(localStorage.getItem(elem));
+             showNewExpneseOnUI(key);
+        });
+    });
+    
+    
+    function removeUserFromUI(key){
+        const parent = document.getElementById("listOfUsers");
+        const liToRemove = document.getElementById(key);
+        // console.log(liToRemove);
+        parent.removeChild(liToRemove);
+    }
+
+    function deleteExpense(key){
+            localStorage.removeItem(key);
+            removeUserFromUI(key);
+    }
+
+
+    function editExpense(key){
+        const obj = JSON.parse(localStorage.getItem(key));
+
+        const expense = obj.expense;
+        const des_text = obj.des_text;
+        const cat_text = obj.cat_text;
+        
+        document.getElementById("expense").value= expense;
+        // document.getElementById("description").value = '' ;
+        
+        // document.getElementById("category").text = " category";
+        
+        deleteExpense(key);
+        console.log("working");
+    }
+
+
+   </script>
+
+
+    
+</body>
+</html>
